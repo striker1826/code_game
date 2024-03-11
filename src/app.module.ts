@@ -6,7 +6,7 @@ import { DatabaseModule } from './modules/database/database.module';
 import { QuestionModule } from './modules/question/question.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true })],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, QuestionModule],
   controllers: [AppController],
   providers: [AppService],
 })
