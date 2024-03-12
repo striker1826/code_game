@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, Session } from '@nestjs/common';
 import { QuestionService } from './question.service';
 import { Question } from 'src/entities/question.entity';
+import { Request } from 'express';
 
 @Controller('question')
 export class QuestionController {
@@ -15,11 +16,16 @@ export class QuestionController {
   @Get()
   async getQuestion(): Promise<Question> {
     const question = await this.questionService.getQuestion();
+    console.log('question: ', question);
     return question;
   }
 
   @Post('/grading/:questionId')
-  async grading(@Param('questionId') questionId: number, @Body() code: { code: string }) {
+  async grading(
+    @Param('questionId') questionId: number,
+    @Body() code: { code: string },
+    // @Param('language') language: string,
+  ) {
     const result = await this.questionService.grading(questionId, code);
     return result;
   }

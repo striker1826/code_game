@@ -13,9 +13,6 @@ export class Category {
   @Column('varchar', { name: 'category', comment: 'Category name', length: 10 })
   category: string;
 
-  @OneToMany(
-    () => QuestionCategory,
-    (questionCategory) => questionCategory.Category,
-  )
+  @OneToMany(() => QuestionCategory, (questionCategory) => questionCategory.Category)
   QuestionCategory: QuestionCategory[];
 }

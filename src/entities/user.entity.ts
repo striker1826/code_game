@@ -1,12 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Unique,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { PatchDate } from './patchDate.entity';
 import { Tier } from './tier.entity';
 import { SolvedTime } from './solvedTime.entity';
@@ -18,7 +10,6 @@ export class User extends PatchDate {
     name: 'userId',
     comment: 'User ID',
   })
-  @Unique(['userId'])
   userId: number;
 
   @Column('bigint', { name: 'tierId', comment: 'Users tier ID' })

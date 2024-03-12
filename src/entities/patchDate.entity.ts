@@ -1,19 +1,6 @@
-import {
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
-@Entity({ name: 'PatchDate' })
 export class PatchDate {
-  @PrimaryGeneratedColumn({
-    type: 'bigint',
-    name: 'patchDateId',
-    comment: 'Patch Date ID',
-  })
-  patchDateId: number;
-
   @CreateDateColumn({
     type: 'timestamp',
     name: 'createdAt',

@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { QuestionRepository } from './question.repository';
 import { DataSource } from 'typeorm';
 import { Question } from 'src/entities/question.entity';
@@ -35,12 +35,22 @@ export class QuestionService {
     return questions[0];
   }
 
+  async runCode(code) {
+    oddAndEven.forEach(async (testCase, i) => {
+      try {
+        const output = await eval(code + `solution(${testCase.input})`);
+        return output;
+      } catch (err) {
+        return err;
+      }
+    });
+  }
+
   async grading(questionId: number, { code }) {
     let result = [];
 
     oddAndEven.forEach(async (testCase, i) => {
-      console.log(`solution(${testCase.input})`);
-      const output = await eval(code + `solution(${testCase.input})`);
+      const output = await this.runCode(code);
 
       try {
         assert.deepStrictEqual(output, testCase.output);

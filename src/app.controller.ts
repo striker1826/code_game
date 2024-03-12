@@ -1,14 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Req } from '@nestjs/common';
+import { Request } from 'express';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor() {}
+
+  @Get('/health')
+  async healthCheck() {
+    return;
+  }
 
   @Get()
-  async getHello() {
-    // return this.appService.test(`function string(input) {
-    // return input
-    // }`);
+  async hello(@Req() req: Request) {
+    console.log(req);
   }
 }

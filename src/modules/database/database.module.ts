@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Category } from 'src/entities/category.entity';
-import { PatchDate } from 'src/entities/patchDate.entity';
 import { Question } from 'src/entities/question.entity';
 import { QuestionCategory } from 'src/entities/questionCategory.entity';
 import { SolvedTime } from 'src/entities/solvedTime.entity';
@@ -12,10 +11,6 @@ import { User } from 'src/entities/user.entity';
 const databaseModule = TypeOrmModule.forRootAsync({
   inject: [ConfigService],
   useFactory: () => {
-    console.log(process.env.DATABASE_HOST);
-    console.log(process.env.DATABASE_USER);
-    console.log(process.env.DATABASE_PASSWORD);
-    console.log(process.env.DATABASE_NAME);
     return {
       type: 'postgres',
       host: process.env.DATABASE_HOST,
@@ -23,13 +18,11 @@ const databaseModule = TypeOrmModule.forRootAsync({
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [Category, PatchDate, Question, QuestionCategory, SolvedTime, Tier, User],
+      entities: [Category, Question, QuestionCategory, SolvedTime, Tier, User],
       charset: 'utf8mb4',
       synchronize: false,
+      ssl: true,
       logging: true,
-      ssl: {
-        requestCert: true,
-      },
     };
   },
 });

@@ -4,9 +4,19 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './modules/database/database.module';
 import { QuestionModule } from './modules/question/question.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, QuestionModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    DatabaseModule,
+    QuestionModule,
+    AuthModule,
+    PassportModule.register({
+      session: true,
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
