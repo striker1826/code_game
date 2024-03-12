@@ -26,11 +26,11 @@ export const testCases = [
 
 export const oddAndEven = [
   { input: 3, output: '홀수입니다' },
-  // { input: 4, output: '짝수입니다' },
-  // { input: 5, output: '홀수입니다' },
-  // { input: 6, output: '짝수입니다' },
-  // { input: 7, output: '홀수입니다' },
-  // { input: 8, output: '짝수입니다' },
-  // { input: 9, output: '홀수입니다' },
-  // { input: 10, output: '짝수입니다' },
+  { input: 4, output: '짝수입니다' },
+  { input: 5, output: '홀수입니다' },
+  { input: 6, output: '짝수입니다' },
+  { input: 7, output: '홀수입니다' },
+  { input: 8, output: '짝수입니다' },
+  { input: 9, output: '홀수입니다' },
+  { input: 10, output: '짝수입니다' },
 ];
