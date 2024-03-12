@@ -6,10 +6,13 @@ import { User } from 'src/entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { SessionSerializer } from 'src/utils/sessionSerializer';
 import { LocalStrategy } from 'src/utils/localStrategy';
+import { GithubOauthStrategy } from './github/github-oauth.strategy';
+import { AuthRepository } from './auth.repository';
+import { AuthRepositoryImpl } from './auth.repositoryImpl';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), PassportModule.register({ session: true })],
+  imports: [TypeOrmModule.forFeature([User])],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, SessionSerializer],
+  providers: [AuthService, { provide: AuthRepository, useClass: AuthRepositoryImpl }, GithubOauthStrategy],
 })
 export class AuthModule {}

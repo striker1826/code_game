@@ -1,8 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { GithubCodeDto } from './dto/github.dto';
+import axios, { AxiosResponse } from 'axios';
+import { AuthRepository } from './auth.repository';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class AuthService {
-  async validateUser(username: string, password: string): Promise<any> {
-    return { id: 1, username: 'test' };
+  constructor(@Inject(AuthRepository) private readonly authRepository: AuthRepository) {}
+
+  async createUser(user: UserDto): Promise<void> {
+    await this.authRepository.saveUser(user);
+    return;
   }
 }
