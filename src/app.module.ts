@@ -6,6 +6,7 @@ import { DatabaseModule } from './modules/database/database.module';
 import { QuestionModule } from './modules/question/question.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
+import { GradingModule } from './modules/grading/grading.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { PassportModule } from '@nestjs/passport';
     DatabaseModule,
     QuestionModule,
     AuthModule,
+    GradingModule,
     PassportModule.register({
       session: true,
     }),
