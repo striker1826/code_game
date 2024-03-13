@@ -17,6 +17,9 @@ export class Question extends PatchDate {
   @Column('varchar', { name: 'question', comment: 'Question' })
   question: string;
 
+  @Column('varchar', { name: 'format', comment: '문제에 대한 답변 기본 형식', nullable: true })
+  format: string;
+
   @OneToMany(() => QuestionCategory, (questionCategory) => questionCategory.Question)
   QuestionCategory: QuestionCategory[];
 

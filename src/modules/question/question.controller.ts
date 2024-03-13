@@ -16,7 +16,6 @@ export class QuestionController {
   @Get()
   async getQuestion(): Promise<Question> {
     const question = await this.questionService.getQuestion();
-    console.log('question: ', question);
     return question;
   }
 

@@ -58,7 +58,7 @@ export class RoomGateway {
   @SubscribeMessage('playerWin')
   playerWin(@MessageBody() data, @ConnectedSocket() client: Socket) {
     const { roomname } = data;
-    console.log('playerWin');
-    client.to(roomname).emit('playerLose');
+    console.log('playerWin: ', roomname);
+    client.to(roomname).emit('playerLose', { result: true });
   }
 }
