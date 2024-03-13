@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { WsAdapter } from '@nestjs/platform-ws';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,7 +24,7 @@ async function bootstrap() {
 
   app.use(passport.initialize());
   app.use(passport.session());
-
+  // app.useWebSocketAdapter(new WsAdapter(app));
   app.enableCors({
     origin: true,
     credentials: true,

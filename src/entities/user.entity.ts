@@ -15,8 +15,11 @@ export class User extends PatchDate {
   @Column('bigint', { name: 'tierId', comment: 'Users tier ID' })
   tierId: number;
 
-  @Column('varchar', { name: 'nickname', comment: 'User nickname', length: 8 })
+  @Column('varchar', { name: 'nickname', comment: 'User nickname' })
   nickname: string;
+
+  @Column('varchar', { name: 'profileUrl', comment: 'User profileUrl' })
+  profileUrl: string;
 
   @ManyToOne(() => Tier, (tier) => tier.User, {
     onDelete: 'CASCADE',
