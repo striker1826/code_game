@@ -23,7 +23,7 @@ export class RoomGateway {
     client.emit('connection', { id: client.id });
   }
 
-  @UseGuards(WsJwtGuard)
+  // @UseGuards(WsJwtGuard)
   @SubscribeMessage('enterLobby')
   enterLobby(@ConnectedSocket() client: Socket) {
     console.log('enterLobby: ', client.data.nickname);
