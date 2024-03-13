@@ -2,7 +2,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { RoomService } from './room.service';
 import { Socket, Server } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
-import { WsJwtGuard } from '../auth/strategy/socketio/websocket.Guard';
+// import { WsJwtGuard } from '../auth/strategy/socketio/websocket.Guard';
 import { User } from 'src/common/decorators/user.decorator';
 
 @WebSocketGateway({
