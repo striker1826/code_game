@@ -20,33 +20,4 @@ export class AuthController {
     const access_token = await this.authService.socialLogin(user);
     return access_token;
   }
-
-  // @UseGuards(LocalAuthGuard)
-  // @Post('login')
-  // async logIn(@Session() session: Record<string, any>) {
-  //   session.authenticated = true;
-  //   return { userId: 'asdf', userName: 'kim' };
-  // }
-
-  // @UseGuards(AuthenticatedGuard)
-  // @Get()
-  // async test(@Req() req: Request) {
-  //   return req.user;
-  // }
-
-  // @UseGuards(AuthenticatedGuard)
-  // @Get('protected')
-  // async getAuthStatus(@Req() req: Request) {
-  //   return req.user;
-  // }
-
-  // @Get('/logout')
-  // logout(@Req() req: Request) {
-  //   console.log(req.session);
-  //   req.session.destroy(() => {
-  //     req.session.id;
-  //   });
-  //   console.log('logout');
-  //   return;
-  // }
 }

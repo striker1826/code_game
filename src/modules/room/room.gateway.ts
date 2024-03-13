@@ -54,4 +54,11 @@ export class RoomGateway {
     client.join(roomname);
     client.to(roomname).emit('joinRoom', { message });
   }
+
+  @SubscribeMessage('playerWin')
+  playerWin(@MessageBody() data, @ConnectedSocket() client: Socket) {
+    const { roomname } = data;
+    console.log('playerWin');
+    client.to(roomname).emit('playerLose');
+  }
 }
