@@ -36,14 +36,12 @@ export class QuestionService {
   }
 
   async runCode(code, input) {
-    // oddAndEven.forEach(async (testCase, i) => {
     try {
       const output = await eval(code + `solution('${input}')`);
       return output;
     } catch (err) {
       return err;
     }
-    // });
   }
 
   async grading(questionId: number, { code }) {
@@ -54,12 +52,11 @@ export class QuestionService {
 
       try {
         assert.deepStrictEqual(output, testCase.output);
-        result.push({ id: i + 1, result: '성공' });
+        result.push(true);
       } catch (err) {
-        result.push({ id: i + 1, result: '실패' });
+        result.push(false);
       }
     });
-
     return result;
   }
 }

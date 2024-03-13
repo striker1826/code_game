@@ -7,6 +7,7 @@ import { QuestionModule } from './modules/question/question.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { GradingModule } from './modules/grading/grading.module';
+import { RoomModule } from './modules/room/room.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { GradingModule } from './modules/grading/grading.module';
     QuestionModule,
     AuthModule,
     GradingModule,
+    RoomModule,
     PassportModule.register({
       session: true,
     }),

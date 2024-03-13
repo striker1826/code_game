@@ -5,9 +5,10 @@ import { Request } from 'express';
 import { AuthenticatedGuard } from 'src/utils/authenticated.guard';
 import { session } from 'passport';
 import { GithubCodeDto } from './dto/github.dto';
-import { GithubOauthGuard } from './github/github-oauth.guard';
+import { GithubOauthGuard } from './strategy/github/github-oauth.guard';
 import { User } from 'src/common/decorators/user.decorator';
 import { UserDto } from './dto/user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -15,10 +16,11 @@ export class AuthController {
 
   @UseGuards(GithubOauthGuard)
   @Get('github')
-  public async signupGithub(@User() user: UserDto): Promise<void> {
-    await this.authService.createUser(user);
-    return;
+  public async signupGithub(@User() user: UserDto): Promise<string> {
+    const access_token = await this.authService.socialLogin(user);
+    return access_token;
   }
+
   // @UseGuards(LocalAuthGuard)
   // @Post('login')
   // async logIn(@Session() session: Record<string, any>) {
