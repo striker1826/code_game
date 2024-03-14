@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { RoomService } from './room.service';
 import { Socket, Server } from 'socket.io';
-import { UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 // import { WsJwtGuard } from '../auth/strategy/socketio/websocket.Guard';
 import { User } from 'src/common/decorators/user.decorator';
 
@@ -26,39 +26,51 @@ export class RoomGateway {
   // @UseGuards(WsJwtGuard)
   @SubscribeMessage('enterLobby')
   enterLobby(@ConnectedSocket() client: Socket) {
-    console.log('enterLobby: ', client.data.nickname);
     client.data.roomname = 'lobby';
     client.join('lobby');
   }
 
-  @SubscribeMessage('sendMessage')
-  sendMessage(@ConnectedSocket() client: Socket, @MessageBody() data): void {
-    const { roomname, message } = data;
-    console.log(roomname, message);
-    client.to(roomname).emit('receiveMessage', { id: client.id, message });
-  }
-
   @SubscribeMessage('createRoom')
-  createRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
+  async createRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
     const { roomname } = data;
-    console.log('createRoom: ', roomname);
-    client.data.roomId = roomname;
-    client.join(roomname);
+    client.data.roomname = roomname;
+    await this.roomService.createRoom(roomname, client);
+    console.log(client.data);
+    return;
   }
 
   @SubscribeMessage('joinRoom')
-  joinRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
-    const { roomname, message } = data;
-    client.data.roomId = roomname;
-    console.log('joinRoom: ', roomname, message);
-    client.join(roomname);
-    client.to(roomname).emit('joinRoom', { message });
+  async joinRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
+    const { roomname, roomId } = data;
+    client.data.roomname = roomname;
+    client.data.roomId = roomId;
+    client.join(roomId);
+    await this.roomService.joinRoom(roomId);
+    console.log(client.data);
+    client.to(roomId).emit('tsetJoinRoom', 'bbb');
   }
 
   @SubscribeMessage('playerWin')
   playerWin(@MessageBody() data, @ConnectedSocket() client: Socket) {
-    const { roomname } = data;
-    console.log('playerWin: ', roomname);
-    client.to(roomname).emit('playerLose', { result: true });
+    const { roomId } = client.data;
+    console.log('send: ', roomId);
+    client.to(roomId).emit('playerLose', 'aaa');
+  }
+
+  async handleDisconnect(@ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
+    await this.roomService.deleteRoom(roomId);
+    client.leave(client.data.roomname);
+  }
+}
+
+@Controller('room')
+export class RoomController {
+  constructor(private readonly roomService: RoomService) {}
+
+  @Get('/list')
+  async getRoomList() {
+    const roomList = await this.roomService.getRoomList();
+    return roomList;
   }
 }
