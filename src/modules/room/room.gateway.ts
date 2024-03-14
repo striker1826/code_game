@@ -2,7 +2,7 @@ import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSo
 import { RoomService } from './room.service';
 import { Socket, Server } from 'socket.io';
 import { Controller, Get, UseGuards } from '@nestjs/common';
-// import { WsJwtGuard } from '../auth/strategy/socketio/websocket.Guard';
+import { WsJwtGuard } from '../auth/strategy/socketio/websocket.Guard';
 import { User } from 'src/common/decorators/user.decorator';
 
 @WebSocketGateway({
@@ -23,7 +23,7 @@ export class RoomGateway {
     client.emit('connection', { id: client.id });
   }
 
-  // @UseGuards(WsJwtGuard)
+  @UseGuards(WsJwtGuard)
   @SubscribeMessage('enterLobby')
   enterLobby(@ConnectedSocket() client: Socket) {
     client.data.roomname = 'lobby';
