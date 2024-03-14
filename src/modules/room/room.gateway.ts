@@ -1,8 +1,9 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { RoomService } from './room.service';
 import { Socket, Server } from 'socket.io';
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { WsJwtGuard } from '../auth/strategy/jwt/websocket.guard';
+import { Request } from 'express';
 
 @WebSocketGateway({
   cors: {
@@ -68,7 +69,8 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Get('/list')
-  async getRoomList() {
+  async getRoomList(@Req() req: Request) {
+    console.log(req.headers.authorization);
     const roomList = await this.roomService.getRoomList();
     return roomList;
   }
