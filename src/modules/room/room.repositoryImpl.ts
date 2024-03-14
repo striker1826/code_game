@@ -20,7 +20,7 @@ export class RoomRepositoryImpl implements RoomRepository {
   }
 
   async updateRoomCountIncrease(roomId: number, count: number): Promise<void> {
-    await this.roomModel.update({ roomId }, { count: count + 1 });
+    await this.roomModel.increment({ roomId, count: 1 }, 'count', 1);
     return;
   }
 
