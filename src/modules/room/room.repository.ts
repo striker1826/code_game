@@ -7,6 +7,8 @@ export interface RoomRepository {
   updateRoomCountDecrease(roomId: number): Promise<void>;
   findRoomList(): Promise<Room[]>;
   findRoomByRoomId(roomId: number): Promise<Room>;
+  updateRoomReadyIncrease(roomId: number): Promise<void>;
+  updateRoomReadyReset(roomId: number): Promise<void>;
   deleteRoom(roomId: number): Promise<void>;
 }
 

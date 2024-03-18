@@ -10,4 +10,7 @@ export class Room {
 
   @Column('int', { name: 'count', comment: '방에 있는 사람의 수' })
   count: number;
+
+  @Column('int', { name: 'ready', comment: '준비한 사람의 수' })
+  ready: number;
 }

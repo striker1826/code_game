@@ -67,6 +67,18 @@ export class RoomGateway {
     client.to(roomId).emit('syncQuestion', question);
   }
 
+  @SubscribeMessage('ready')
+  async playerReady(@MessageBody() data, @ConnectedSocket() client: Socket) {
+    const { roomId } = client.data;
+    const result = await this.roomService.readyIncrease(roomId);
+    if (result.result) {
+      console.log(result.data);
+      client.emit('start', result.data);
+      client.to(roomId).emit('start', result.data);
+      return;
+    }
+  }
+
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
     await this.roomService.deleteRoom(roomId);

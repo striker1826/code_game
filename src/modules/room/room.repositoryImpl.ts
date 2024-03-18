@@ -10,6 +10,7 @@ export class RoomRepositoryImpl implements RoomRepository {
     const newRoom = this.roomModel.create();
     newRoom.roomname = roomname;
     newRoom.count = 1;
+    newRoom.ready = 0;
     const createdRoom = await this.roomModel.save(newRoom);
     return createdRoom;
   }
@@ -27,6 +28,14 @@ export class RoomRepositoryImpl implements RoomRepository {
   async updateRoomCountDecrease(roomId: number): Promise<void> {
     await this.roomModel.decrement({ roomId }, 'count', 1);
     return;
+  }
+
+  async updateRoomReadyIncrease(roomId: number): Promise<void> {
+    await this.roomModel.increment({ roomId }, 'ready', 1);
+  }
+
+  async updateRoomReadyReset(roomId: number): Promise<void> {
+    await this.roomModel.update({ roomId }, { ready: 0 });
   }
 
   async findRoomList(): Promise<Room[]> {

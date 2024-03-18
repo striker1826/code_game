@@ -2,10 +2,15 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { RoomRepository } from './room.repository';
 import { Room } from 'src/entities/room.entity';
 import { Socket } from 'socket.io';
+import { QuestionService } from '../question/question.service';
+import { QuestionRepository } from '../question/question.repository';
 
 @Injectable()
 export class RoomService {
-  constructor(@Inject(RoomRepository) private readonly roomRepository: RoomRepository) {}
+  constructor(
+    @Inject(RoomRepository) private readonly roomRepository: RoomRepository,
+    @Inject(QuestionRepository) private readonly questionRepository: QuestionRepository,
+  ) {}
 
   async socketCreateRoom(roomname: string, client): Promise<void> {
     const room = await this.roomRepository.findRoomByRoomName(roomname);
@@ -52,5 +57,20 @@ export class RoomService {
     }
 
     return;
+  }
+
+  async readyIncrease(roomId: number) {
+    await this.roomRepository.updateRoomReadyIncrease(roomId);
+    const room = await this.roomRepository.findRoomByRoomId(roomId);
+    if (room.ready < room.count) {
+      return { result: false, data: null };
+    }
+
+    if (room.ready >= room.count) {
+      await this.roomRepository.updateRoomReadyReset(roomId);
+      const questions = await this.questionRepository.findQuestions();
+      questions.sort(() => Math.random() - 0.5);
+      return { result: true, data: questions[0] };
+    }
   }
 }
