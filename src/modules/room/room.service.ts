@@ -1,9 +1,10 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RoomRepository } from './room.repository';
 import { Room } from 'src/entities/room.entity';
 import { Socket } from 'socket.io';
 import { QuestionService } from '../question/question.service';
 import { QuestionRepository } from '../question/question.repository';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class RoomService {
@@ -31,15 +32,23 @@ export class RoomService {
 
   async joinRoom(roomname: string, client: Socket): Promise<Room> {
     const findedRoom = await this.roomRepository.findRoomByRoomName(roomname);
-    if (!findedRoom) throw new Error('존재하지 않는 방입니다.');
-    if (findedRoom.count >= 2) throw new BadRequestException('방이 꽉 찼습니다.');
-    await this.roomRepository.updateRoomCountIncrease(findedRoom.roomId, findedRoom.count);
+    // if (!findedRoom) throw new Error('존재하지 않는 방입니다.');
+    // if (findedRoom.count >= 2) throw new WsException('방이 꽉 찼습니다.');
+    // await this.roomRepository.updateRoomCountIncrease(findedRoom.roomId, findedRoom.count);
 
     client.data.roomname = roomname;
     client.data.roomId = findedRoom.roomId;
 
     client.join(String(findedRoom.roomId));
     return findedRoom;
+  }
+
+  async httpJoinRoom(roomname: string) {
+    const findedRoom = await this.roomRepository.findRoomByRoomName(roomname);
+    if (!findedRoom) throw new NotFoundException('존재하지 않는 방입니다.');
+    if (findedRoom.count >= 2) throw new BadRequestException('방이 꽉 찼습니다.');
+    await this.roomRepository.updateRoomCountIncrease(findedRoom.roomId, findedRoom.count);
+    return;
   }
 
   async getRoomList(): Promise<Room[]> {

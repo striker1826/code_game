@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { RoomService } from './room.service';
 import { Socket, Server } from 'socket.io';
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { WsJwtGuard } from '../auth/strategy/jwt/websocket.guard';
 import { Request } from 'express';
 import { QuestionService } from '../question/question.service';
@@ -96,6 +96,12 @@ export class RoomController {
   async createRoom(@Body() roomData: { roomname: string }) {
     const createdRoom = await this.roomService.createRoom(roomData);
     return createdRoom;
+  }
+
+  @Patch('')
+  async httpJoinRoom(@Body() roomData: { roomname: string }) {
+    await this.roomService.httpJoinRoom(roomData.roomname);
+    return;
   }
 
   @Get('/list')
