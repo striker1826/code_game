@@ -24,7 +24,6 @@ export class RoomGateway {
     client.emit('connection', { id: client.id });
   }
 
-  @UseGuards(WsJwtGuard)
   @SubscribeMessage('enterLobby')
   enterLobby(@ConnectedSocket() client: Socket) {
     client.data.roomname = 'lobby';
@@ -37,6 +36,7 @@ export class RoomGateway {
     client.data.roomname = roomname;
     await this.roomService.socketCreateRoom(roomname, client);
     console.log(`${roomname} 방이 생성되었습니다.`);
+    client.broadcast.emit('createdRoom');
     return;
   }
 
