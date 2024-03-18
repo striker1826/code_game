@@ -83,6 +83,7 @@ export class RoomGateway {
     const { roomId } = client.data;
     await this.roomService.deleteRoom(roomId);
     client.to(roomId).emit('leaveRoom', '상대방이 방에서 나갔습니다.');
+    client.broadcast.emit('createdRoom');
     client.leave(client.data.roomname);
   }
 }
