@@ -36,6 +36,12 @@ export class QuestionService {
     return questions[0];
   }
 
+  async getQuestionById(questionId: number): Promise<Question> {
+    const question = await this.questionRepository.findQuestionByQuestionId(questionId);
+    if (!question) throw new NotFoundException('Question not found');
+    return question;
+  }
+
   async runCode(code, input) {
     try {
       const output = await eval(code + `solution('${input}')`);

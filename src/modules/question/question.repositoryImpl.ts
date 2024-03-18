@@ -39,4 +39,9 @@ export class QuestionRepositoryImpl implements QuestionRepository {
     const question = await this.questionModel.find();
     return question;
   }
+
+  async findQuestionByQuestionId(questionId: number): Promise<Question> {
+    const question = await this.questionModel.findOne({ where: { questionId } });
+    return question;
+  }
 }

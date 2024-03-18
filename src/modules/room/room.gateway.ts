@@ -1,9 +1,10 @@
 import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { RoomService } from './room.service';
 import { Socket, Server } from 'socket.io';
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { WsJwtGuard } from '../auth/strategy/jwt/websocket.guard';
 import { Request } from 'express';
+import { QuestionService } from '../question/question.service';
 
 @WebSocketGateway({
   cors: {
@@ -14,7 +15,7 @@ import { Request } from 'express';
   },
 })
 export class RoomGateway {
-  constructor(private readonly roomService: RoomService) {}
+  constructor(private readonly roomService: RoomService, private readonly questionService: QuestionService) {}
 
   @WebSocketServer()
   server: Server;
@@ -34,20 +35,18 @@ export class RoomGateway {
   async createRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
     const { roomname } = data;
     client.data.roomname = roomname;
-    await this.roomService.createRoom(roomname, client);
-    console.log(client.data);
+    await this.roomService.socketCreateRoom(roomname, client);
+    console.log(`${roomname} 방이 생성되었습니다.`);
     return;
   }
 
   @SubscribeMessage('joinRoom')
   async joinRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
-    const { roomname, roomId } = data;
-    client.data.roomname = roomname;
-    client.data.roomId = roomId;
-    client.join(roomId);
-    await this.roomService.joinRoom(roomId);
-    console.log(client.data);
-    client.to(roomId).emit('tsetJoinRoom', 'bbb');
+    const { roomname } = data;
+    console.log('roomname: ', roomname);
+    const room = await this.roomService.joinRoom(roomname, client);
+    console.log(`${roomname} 방에 입장하셨습니다.`);
+    client.to(String(room.roomId)).emit('joinRoom', `${roomname} 방에 사람이 입장하였습니다.`);
   }
 
   @SubscribeMessage('playerWin')
@@ -57,9 +56,21 @@ export class RoomGateway {
     client.to(roomId).emit('playerLose', 'aaa');
   }
 
+  @SubscribeMessage('syncQuestion')
+  async syncQuestion(@MessageBody() data, @ConnectedSocket() client: Socket) {
+    const { questionId } = data;
+    const { roomId } = client.data;
+    console.log(questionId);
+    console.log(roomId);
+    const question = await this.questionService.getQuestionById(questionId);
+    console.log(question);
+    client.to(roomId).emit('syncQuestion', question);
+  }
+
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
     await this.roomService.deleteRoom(roomId);
+    client.to(roomId).emit('leaveRoom', '상대방이 방에서 나갔습니다.');
     client.leave(client.data.roomname);
   }
 }
@@ -67,6 +78,12 @@ export class RoomGateway {
 @Controller('room')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
+
+  @Post('')
+  async createRoom(@Body() roomData: { roomname: string }) {
+    const createdRoom = await this.roomService.createRoom(roomData);
+    return createdRoom;
+  }
 
   @Get('/list')
   async getRoomList(@Req() req: Request) {

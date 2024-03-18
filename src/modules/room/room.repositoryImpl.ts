@@ -14,8 +14,8 @@ export class RoomRepositoryImpl implements RoomRepository {
     return createdRoom;
   }
 
-  async findRoomByRoomName(roomId: number): Promise<Room> {
-    const room = await this.roomModel.findOne({ where: { roomId } });
+  async findRoomByRoomName(roomname: string): Promise<Room> {
+    const room = await this.roomModel.findOne({ where: { roomname } });
     return room;
   }
 

@@ -6,6 +6,7 @@ export interface QuestionRepository {
   // Find
   findCategory(categoryId: number): Promise<Category>;
   findQuestions(): Promise<Question[]>;
+  findQuestionByQuestionId(questionId: number): Promise<Question>;
 
   // Create
   createQuestion(question: string, manager: EntityManager): Promise<Question>;

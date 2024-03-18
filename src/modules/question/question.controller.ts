@@ -19,6 +19,12 @@ export class QuestionController {
     return question;
   }
 
+  @Get('/:questionId')
+  async getQuestionById(@Param('questionId') questionId: number): Promise<Question> {
+    const question = await this.questionService.getQuestionById(questionId);
+    return question;
+  }
+
   @Post('/grading/:questionId')
   async grading(
     @Param('questionId') questionId: number,

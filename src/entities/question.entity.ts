@@ -23,6 +23,9 @@ export class Question extends PatchDate {
   @OneToMany(() => QuestionCategory, (questionCategory) => questionCategory.Question)
   QuestionCategory: QuestionCategory[];
 
+  @Column('varchar', { name: 'time', comment: '문제 풀이 시간' })
+  time: string;
+
   @OneToMany(() => SolvedTime, (solvedTime) => solvedTime.Question)
   SolvedTime: SolvedTime[];
 

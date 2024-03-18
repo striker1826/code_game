@@ -12,5 +12,6 @@ import { Category } from 'src/entities/category.entity';
   imports: [TypeOrmModule.forFeature([Question, QuestionCategory, Category])],
   controllers: [QuestionController],
   providers: [QuestionService, { provide: QuestionRepository, useClass: QuestionRepositoryImpl }],
+  exports: [QuestionRepository, QuestionService],
 })
 export class QuestionModule {}
