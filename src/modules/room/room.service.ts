@@ -32,7 +32,7 @@ export class RoomService {
   async joinRoom(roomname: string, client: Socket): Promise<Room> {
     const findedRoom = await this.roomRepository.findRoomByRoomName(roomname);
     if (!findedRoom) throw new Error('존재하지 않는 방입니다.');
-    if (findedRoom.count > 2) throw new BadRequestException('방이 꽉 찼습니다.');
+    if (findedRoom.count >= 2) throw new BadRequestException('방이 꽉 찼습니다.');
     await this.roomRepository.updateRoomCountIncrease(findedRoom.roomId, findedRoom.count);
 
     client.data.roomname = roomname;

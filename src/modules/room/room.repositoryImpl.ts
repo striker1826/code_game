@@ -39,7 +39,7 @@ export class RoomRepositoryImpl implements RoomRepository {
   }
 
   async findRoomList(): Promise<Room[]> {
-    const roomList = await this.roomModel.find({ where: { count: 1 } });
+    const roomList = await this.roomModel.find();
     return roomList;
   }
 
