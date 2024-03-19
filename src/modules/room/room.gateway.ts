@@ -72,9 +72,9 @@ export class RoomGateway {
     const { roomId } = client.data;
     const result = await this.roomService.readyIncrease(roomId);
     if (result.result) {
-      console.log(result.data);
-      client.emit('start', result.data);
-      client.to(roomId).emit('start', result.data);
+      console.log(result.testCases);
+      client.emit('start', { question: result.data, testCases: result.testCases });
+      client.to(roomId).emit('start', { question: result.data, testCases: result.testCases });
       return;
     }
   }

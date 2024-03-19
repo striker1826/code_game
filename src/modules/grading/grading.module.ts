@@ -10,5 +10,6 @@ import { TestCase } from 'src/entities/testCase.entity';
   imports: [TypeOrmModule.forFeature([TestCase])],
   controllers: [GradingController],
   providers: [GradingService, { provide: GradingRepository, useClass: GradingRepositoryImpl }],
+  exports: [GradingService, GradingRepository],
 })
 export class GradingModule {}

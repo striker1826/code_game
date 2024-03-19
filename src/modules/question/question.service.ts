@@ -50,20 +50,4 @@ export class QuestionService {
       return err;
     }
   }
-
-  async grading(questionId: number, { code }) {
-    let result = [];
-
-    oddAndEven.forEach(async (testCase, i) => {
-      const output = await this.runCode(code, testCase.input);
-
-      try {
-        assert.deepStrictEqual(output, testCase.output);
-        result.push(true);
-      } catch (err) {
-        result.push(false);
-      }
-    });
-    return result;
-  }
 }

@@ -5,12 +5,14 @@ import { Socket } from 'socket.io';
 import { QuestionService } from '../question/question.service';
 import { QuestionRepository } from '../question/question.repository';
 import { WsException } from '@nestjs/websockets';
+import { GradingRepository } from '../grading/grading.repository';
 
 @Injectable()
 export class RoomService {
   constructor(
     @Inject(RoomRepository) private readonly roomRepository: RoomRepository,
     @Inject(QuestionRepository) private readonly questionRepository: QuestionRepository,
+    @Inject(GradingRepository) private readonly gradingRepository: GradingRepository,
   ) {}
 
   async socketCreateRoom(roomname: string, client): Promise<void> {
@@ -75,11 +77,14 @@ export class RoomService {
       return { result: false, data: null };
     }
 
+    // 게임 시작
     if (room.ready >= room.count) {
       await this.roomRepository.updateRoomReadyReset(roomId);
       const questions = await this.questionRepository.findQuestions();
       questions.sort(() => Math.random() - 0.5);
-      return { result: true, data: questions[0] };
+
+      const testCases = await this.gradingRepository.findSampleTestCaseByQuestionId(questions[0].questionId);
+      return { result: true, data: questions[0], testCases: testCases };
     }
   }
 }

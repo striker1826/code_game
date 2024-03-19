@@ -24,14 +24,4 @@ export class QuestionController {
     const question = await this.questionService.getQuestionById(questionId);
     return question;
   }
-
-  @Post('/grading/:questionId')
-  async grading(
-    @Param('questionId') questionId: number,
-    @Body() code: { code: string },
-    // @Param('language') language: string,
-  ) {
-    const result = await this.questionService.grading(questionId, code);
-    return result;
-  }
 }
