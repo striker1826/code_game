@@ -19,6 +19,9 @@ export class TestCase extends PatchDate {
   @Column({ type: 'varchar', name: 'output', comment: '출력값' })
   output: string;
 
+  @Column({ type: 'varchar', name: 'outputType', comment: '출력값의 타입', nullable: true })
+  outputType: string;
+
   @ManyToOne(() => Question, (question) => question.TestCases, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

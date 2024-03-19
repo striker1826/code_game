@@ -40,7 +40,7 @@ export class GradingService {
 
   async runCode(code, input) {
     try {
-      const output = await eval(code + `solution('${input}')`);
+      const output = await eval(code + `solution(${input})`);
       return output;
     } catch (err) {
       throw new BadRequestException('코드 실행 중 오류가 발생했습니다.');
@@ -49,14 +49,23 @@ export class GradingService {
 
   async gradingTestCase({ code }, questionId: number) {
     // code, questionId를 이용하여 채점하는 로직
+    console.log(questionId);
     const testCases = await this.gradingRepository.findTestCaseByQuestionId(questionId);
     console.log(testCases);
     let result = [];
 
     testCases.forEach(async (testCase) => {
       const output = await this.runCode(code, testCase.input);
+
       try {
-        assert.deepStrictEqual(output, testCase.output);
+        let testOutput;
+        if (testCase.outputType === 'number') {
+          testOutput = Number(testCase.output);
+        } else if (testCase.outputType === 'boolean') {
+          testOutput = Boolean(testCase.output);
+        }
+
+        assert.deepStrictEqual(output, testOutput);
         result.push({ testCaseId: testCase.testCaseId, result: '성공' });
       } catch (err) {
         result.push({ testCaseId: testCase.testCaseId, result: '실패' });
