@@ -63,6 +63,8 @@ export class GradingService {
           testOutput = Number(testCase.output);
         } else if (testCase.outputType === 'boolean') {
           testOutput = Boolean(testCase.output);
+        } else if (testCase.outputType === 'string') {
+          testOutput = String(testCase.output);
         }
 
         assert.deepStrictEqual(output, testOutput);
