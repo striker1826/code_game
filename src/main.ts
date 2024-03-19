@@ -26,7 +26,7 @@ async function bootstrap() {
   app.use(passport.session());
   // app.useWebSocketAdapter(new WsAdapter(app));
   app.enableCors({
-    origin: true,
+    origin: 'https://algorithmcodegame.netlify.app',
     credentials: true,
   });
 
