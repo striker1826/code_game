@@ -22,7 +22,7 @@ const databaseModule = TypeOrmModule.forRootAsync({
       database: process.env.DATABASE_NAME,
       entities: [Category, Question, QuestionCategory, SolvedTime, Tier, User, TestCase, Room],
       charset: 'utf8mb4',
-      synchronize: true,
+      synchronize: false,
       ssl: true,
       logging: true,
     };
