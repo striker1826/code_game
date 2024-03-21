@@ -14,6 +14,6 @@ export class Room {
   @Column('int', { name: 'ready', comment: '준비한 사람의 수' })
   ready: number;
 
-  @Column('boolean', { name: 'isReady', comment: '준비 상태' })
+  @Column('boolean', { name: 'isReady', comment: '준비 상태', nullable: true })
   isReady: boolean;
 }

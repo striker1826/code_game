@@ -35,8 +35,16 @@ export class RoomRepositoryImpl implements RoomRepository {
     await this.roomModel.increment({ roomId }, 'ready', 1);
   }
 
+  async updateRoomIsUnReady(roomId: number): Promise<void> {
+    await this.roomModel.update({ roomId }, { isReady: false });
+  }
+
   async updateRoomReadyReset(roomId: number): Promise<void> {
     await this.roomModel.update({ roomId }, { ready: 0 });
+  }
+
+  async updateRoomISReady(roomId: number): Promise<void> {
+    await this.roomModel.update({ roomId }, { isReady: true });
   }
 
   async findRoomList(): Promise<Room[]> {

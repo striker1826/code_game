@@ -80,6 +80,7 @@ export class RoomService {
 
     // 게임 시작
     if (room.ready >= room.count) {
+      await this.roomRepository.updateRoomISReady(roomId);
       await this.roomRepository.updateRoomReadyReset(roomId);
       const questions = await this.questionRepository.findQuestions();
       questions.sort(() => Math.random() - 0.5);
@@ -87,5 +88,10 @@ export class RoomService {
       const testCases = await this.gradingRepository.findSampleTestCaseByQuestionId(questions[0].questionId);
       return { result: true, data: questions[0], testCases: testCases };
     }
+  }
+
+  async updateRoomIsUnReady(roomId: number) {
+    await this.roomRepository.updateRoomIsUnReady(roomId);
+    return;
   }
 }

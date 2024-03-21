@@ -10,6 +10,8 @@ export interface RoomRepository {
   updateRoomReadyIncrease(roomId: number): Promise<void>;
   updateRoomReadyReset(roomId: number): Promise<void>;
   deleteRoom(roomId: number): Promise<void>;
+  updateRoomISReady(roomId: number): Promise<void>;
+  updateRoomIsUnReady(roomId: number): Promise<void>;
 }
 
 export const RoomRepository = Symbol('RoomRepository');

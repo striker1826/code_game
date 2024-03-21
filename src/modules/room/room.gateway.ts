@@ -50,8 +50,9 @@ export class RoomGateway {
   }
 
   @SubscribeMessage('playerWin')
-  playerWin(@MessageBody() data, @ConnectedSocket() client: Socket) {
+  async playerWin(@MessageBody() data, @ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
+    await this.roomService.updateRoomIsUnReady(roomId);
     console.log('send: ', roomId);
     client.to(roomId).emit('playerLose', 'aaa');
   }
