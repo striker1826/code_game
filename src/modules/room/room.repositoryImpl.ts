@@ -11,6 +11,7 @@ export class RoomRepositoryImpl implements RoomRepository {
     newRoom.roomname = roomname;
     newRoom.count = 1;
     newRoom.ready = 0;
+    newRoom.isReady = false;
     const createdRoom = await this.roomModel.save(newRoom);
     return createdRoom;
   }

@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { RoomRepository } from './room.repository';
 import { Room } from 'src/entities/room.entity';
 import { Socket } from 'socket.io';
@@ -49,6 +49,7 @@ export class RoomService {
     const findedRoom = await this.roomRepository.findRoomByRoomName(roomname);
     if (!findedRoom) throw new NotFoundException('존재하지 않는 방입니다.');
     if (findedRoom.count >= 2) throw new BadRequestException('방이 꽉 찼습니다.');
+    if (findedRoom.isReady) throw new UnauthorizedException('이미 시작된 방입니다.');
     await this.roomRepository.updateRoomCountIncrease(findedRoom.roomId, findedRoom.count);
     return;
   }
