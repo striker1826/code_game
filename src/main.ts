@@ -3,12 +3,16 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as session from 'express-session';
 import * as passport from 'passport';
-import { WsAdapter } from '@nestjs/platform-ws';
+import { winstonLogger } from './common/middleware/winstonLogger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api');
+
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+  const logger = winstonLogger;
+  app.useLogger(logger);
 
   app.use(
     session({

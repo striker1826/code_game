@@ -37,6 +37,7 @@
     "class-validator": "^0.14.1",
     "express-session": "^1.18.0",
     "mysql2": "^3.9.2",
+    "nest-winston": "^1.9.4",
     "nestjs-session": "^3.0.1",
     "passport": "^0.7.0",
     "passport-github": "^1.1.0",
@@ -48,7 +49,9 @@
     "socket.io": "^4.7.4",
     "typeorm": "^0.3.20",
     "vm": "^0.1.0",
-    "vm2": "^3.9.19"
+    "vm2": "^3.9.19",
+    "winston": "^3.12.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
