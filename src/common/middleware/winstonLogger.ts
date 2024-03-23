@@ -17,6 +17,15 @@ const dailyOptions = (level: string) => {
 };
 
 export const winstonLogger = WinstonModule.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    winston.format.ms(),
+    nestWinstonModuleUtilities.format.nestLike('관리자의 집', {}),
+  ),
+
   transports: [
     new winston.transports.Console({
       level: env === 'production' ? 'info' : 'silly',
