@@ -1,18 +1,22 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { RoomRepository } from './room.repository';
 import { Room } from 'src/entities/room.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
+import { RoomUser } from 'src/entities/roomUser.entity';
 
 export class RoomRepositoryImpl implements RoomRepository {
-  constructor(@InjectRepository(Room) private readonly roomModel: Repository<Room>) {}
+  constructor(
+    @InjectRepository(Room) private readonly roomModel: Repository<Room>,
+    @InjectRepository(RoomUser) private readonly roomUserModel: Repository<RoomUser>,
+  ) {}
 
-  async saveRoom(roomname: string): Promise<Room> {
-    const newRoom = this.roomModel.create();
+  async saveRoom(roomname: string, manager: EntityManager): Promise<Room> {
+    const newRoom = manager.getRepository(Room).create();
     newRoom.roomname = roomname;
     newRoom.count = 1;
     newRoom.ready = 0;
     newRoom.isReady = false;
-    const createdRoom = await this.roomModel.save(newRoom);
+    const createdRoom = await manager.getRepository(Room).save(newRoom);
     return createdRoom;
   }
 
@@ -21,13 +25,13 @@ export class RoomRepositoryImpl implements RoomRepository {
     return room;
   }
 
-  async updateRoomCountIncrease(roomId: number, count: number): Promise<void> {
-    await this.roomModel.increment({ roomId, count: 1 }, 'count', 1);
+  async updateRoomCountIncrease(roomId: number, count: number, manager: EntityManager): Promise<void> {
+    await manager.getRepository(Room).increment({ roomId, count: 1 }, 'count', 1);
     return;
   }
 
-  async updateRoomCountDecrease(roomId: number): Promise<void> {
-    await this.roomModel.decrement({ roomId }, 'count', 1);
+  async updateRoomCountDecrease(roomId: number, manager: EntityManager): Promise<void> {
+    await manager.getRepository(Room).decrement({ roomId }, 'count', 1);
     return;
   }
 
@@ -57,7 +61,26 @@ export class RoomRepositoryImpl implements RoomRepository {
     return room;
   }
 
-  async deleteRoom(roomId: number): Promise<void> {
-    await this.roomModel.delete({ roomId });
+  async deleteRoom(roomId: number, manager: EntityManager): Promise<void> {
+    await manager.getRepository(Room).delete({ roomId });
+    return;
+  }
+
+  async findRoomIsUserId(userId: number) {
+    const roomUser = await this.roomUserModel.findOne({ where: { userId } });
+    return roomUser;
+  }
+
+  async saveRoomUser(roomId: number, userId: number, manager: EntityManager): Promise<void> {
+    const newRoomUser = manager.getRepository(RoomUser).create();
+    newRoomUser.roomId = roomId;
+    newRoomUser.userId = userId;
+    await manager.getRepository(RoomUser).save(newRoomUser);
+    return;
+  }
+
+  async deleteRoomUser(roomId: number, userId: number, manager: EntityManager): Promise<void> {
+    await manager.getRepository(RoomUser).delete({ roomId, userId });
+    return;
   }
 }

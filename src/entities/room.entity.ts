@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { RoomUser } from './roomUser.entity';
 
 @Entity({ name: 'Room' })
 export class Room {
@@ -16,4 +17,7 @@ export class Room {
 
   @Column('boolean', { name: 'isReady', comment: '준비 상태', nullable: true })
   isReady: boolean;
+
+  @OneToMany(() => RoomUser, (RoomUser) => RoomUser.Room)
+  RoomUser: RoomUser[];
 }

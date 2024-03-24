@@ -1,17 +1,21 @@
 import { Room } from 'src/entities/room.entity';
+import { EntityManager } from 'typeorm';
 
 export interface RoomRepository {
-  saveRoom(roomname: string): Promise<Room>;
+  saveRoom(roomname: string, manager: EntityManager): Promise<Room>;
   findRoomByRoomName(roomname: string): Promise<Room>;
-  updateRoomCountIncrease(roomId: number, count: number): Promise<void>;
-  updateRoomCountDecrease(roomId: number): Promise<void>;
+  updateRoomCountIncrease(roomId: number, count: number, manager: EntityManager): Promise<void>;
+  updateRoomCountDecrease(roomId: number, manager: EntityManager): Promise<void>;
   findRoomList(): Promise<Room[]>;
   findRoomByRoomId(roomId: number): Promise<Room>;
   updateRoomReadyIncrease(roomId: number): Promise<void>;
   updateRoomReadyReset(roomId: number): Promise<void>;
-  deleteRoom(roomId: number): Promise<void>;
+  deleteRoom(roomId: number, manager: EntityManager): Promise<void>;
   updateRoomISReady(roomId: number): Promise<void>;
   updateRoomIsUnReady(roomId: number): Promise<void>;
+  findRoomIsUserId(userId: number);
+  saveRoomUser(roomId: number, userId: number, manager: EntityManager): Promise<void>;
+  deleteRoomUser(roomId: number, userId: number, manager: EntityManager): Promise<void>;
 }
 
 export const RoomRepository = Symbol('RoomRepository');

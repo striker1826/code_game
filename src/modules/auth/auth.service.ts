@@ -37,4 +37,9 @@ export class AuthService {
 
     return access_token;
   }
+
+  async testLogin(data) {
+    const access_token = this.generatedAccessToken(data);
+    return access_token;
+  }
 }

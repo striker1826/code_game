@@ -2,10 +2,9 @@ import { BadRequestException, Inject, Injectable, NotFoundException, Unauthorize
 import { RoomRepository } from './room.repository';
 import { Room } from 'src/entities/room.entity';
 import { Socket } from 'socket.io';
-import { QuestionService } from '../question/question.service';
 import { QuestionRepository } from '../question/question.repository';
-import { WsException } from '@nestjs/websockets';
 import { GradingRepository } from '../grading/grading.repository';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class RoomService {
@@ -13,40 +12,83 @@ export class RoomService {
     @Inject(RoomRepository) private readonly roomRepository: RoomRepository,
     @Inject(QuestionRepository) private readonly questionRepository: QuestionRepository,
     @Inject(GradingRepository) private readonly gradingRepository: GradingRepository,
+    private readonly dataSource: DataSource,
   ) {}
 
-  async socketCreateRoom(roomname: string, client): Promise<void> {
+  async socketCreateRoom(roomname: string, client) {
     const room = await this.roomRepository.findRoomByRoomName(roomname);
-    client.data.roomId = room.roomId;
+    if (!room) {
+      return { result: false, data: '존재하지 않는 방입니다.' };
+    }
+
+    const isEnterRoom = await this.roomRepository.findRoomIsUserId(client.data.userId);
+    if (isEnterRoom) {
+      return { result: false, data: null };
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      await this.roomRepository.saveRoomUser(room.roomId, client.data.userId, manager);
+    });
+    client.data['roomId'] = room.roomId;
     client.data.roomname = room.roomname;
     client.join(String(room.roomId));
-    return;
+    return { result: true, data: null };
   }
 
-  async createRoom({ roomname }): Promise<Room> {
+  async createRoom({ roomname }, userId: number): Promise<Room> {
     const isRoom = await this.roomRepository.findRoomByRoomName(roomname);
     if (isRoom) {
       throw new BadRequestException('이미 존재하는 방입니다.');
     }
-    const createdRoom = await this.roomRepository.saveRoom(roomname);
+
+    const isEnterRoom = await this.roomRepository.findRoomIsUserId(userId);
+    if (isEnterRoom) {
+      throw new BadRequestException('이미 방에 입장한 유저입니다.');
+    }
+
+    let createdRoom;
+    await this.dataSource.transaction(async (manager) => {
+      createdRoom = await this.roomRepository.saveRoom(roomname, manager);
+    });
+
     return createdRoom;
   }
 
-  async joinRoom(roomname: string, client: Socket): Promise<Room> {
+  async joinRoom(roomname: string, client: Socket): Promise<{ result: boolean; data: number | String }> {
     const findedRoom = await this.roomRepository.findRoomByRoomName(roomname);
-    await this.roomRepository.updateRoomCountIncrease(findedRoom.roomId, findedRoom.count);
+
+    const isEnterRoom = await this.roomRepository.findRoomIsUserId(client.data.userId);
+    if (isEnterRoom) {
+      return { result: false, data: null };
+    }
+
+    if (!findedRoom || findedRoom.count >= 2 || findedRoom.isReady) {
+      return { result: false, data: '비정상 경로' };
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      await this.roomRepository.updateRoomCountIncrease(findedRoom.roomId, findedRoom.count, manager);
+      await this.roomRepository.saveRoomUser(findedRoom.roomId, client.data.userId, manager);
+    });
+
     client.data.roomname = roomname;
     client.data.roomId = findedRoom.roomId;
 
     client.join(String(findedRoom.roomId));
-    return findedRoom;
+    return { result: true, data: findedRoom.roomId };
   }
 
-  async httpJoinRoom(roomname: string) {
+  async httpJoinRoom(roomname: string, userId: number) {
     const findedRoom = await this.roomRepository.findRoomByRoomName(roomname);
     if (!findedRoom) throw new NotFoundException('존재하지 않는 방입니다.');
     if (findedRoom.count >= 2) throw new BadRequestException('방이 꽉 찼습니다.');
     if (findedRoom.isReady) throw new UnauthorizedException('이미 시작된 방입니다.');
+
+    const isEnterRoom = await this.roomRepository.findRoomIsUserId(userId);
+    if (isEnterRoom) {
+      throw new BadRequestException('이미 방에 입장한 유저입니다.');
+    }
+
     return;
   }
 
@@ -55,14 +97,21 @@ export class RoomService {
     return roomList;
   }
 
-  async deleteRoom(roomId: number): Promise<void> {
+  async deleteRoom(roomId, userId: number): Promise<void> {
     const room = await this.roomRepository.findRoomByRoomId(roomId);
-
-    if (room && room.count !== 1) {
-      await this.roomRepository.updateRoomCountDecrease(roomId);
-    } else {
-      await this.roomRepository.deleteRoom(roomId);
+    if (!room) {
+      return;
     }
+
+    await this.dataSource.transaction(async (manager) => {
+      if (room && room.count !== 1) {
+        await this.roomRepository.deleteRoomUser(room.roomId, userId, manager);
+        await this.roomRepository.updateRoomCountDecrease(room.roomId, manager);
+      } else {
+        await this.roomRepository.deleteRoomUser(room.roomId, userId, manager);
+        await this.roomRepository.deleteRoom(room.roomId, manager);
+      }
+    });
 
     return;
   }
@@ -70,6 +119,7 @@ export class RoomService {
   async readyIncrease(roomId: number) {
     await this.roomRepository.updateRoomReadyIncrease(roomId);
     const room = await this.roomRepository.findRoomByRoomId(roomId);
+
     if (room.ready < room.count) {
       return { result: false, data: null };
     }
@@ -89,5 +139,12 @@ export class RoomService {
   async updateRoomIsUnReady(roomId: number) {
     await this.roomRepository.updateRoomIsUnReady(roomId);
     return;
+  }
+
+  async invalidEnterRoom(userId: number) {
+    const isEnterRoom = await this.roomRepository.findRoomIsUserId(userId);
+    if (isEnterRoom) {
+      throw new BadRequestException('이미 방에 입장한 유저입니다.');
+    }
   }
 }

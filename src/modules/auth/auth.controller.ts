@@ -20,4 +20,10 @@ export class AuthController {
     const access_token = await this.authService.socialLogin(user);
     return access_token;
   }
+
+  @Post('test')
+  async testSign(@Body() data) {
+    const res = await this.authService.testLogin(data);
+    return res;
+  }
 }

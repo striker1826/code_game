@@ -5,6 +5,10 @@ import { Body, Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/comm
 import { WsJwtGuard } from '../auth/strategy/jwt/websocket.guard';
 import { Request } from 'express';
 import { QuestionService } from '../question/question.service';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/common/decorators/user.decorator';
+import { JwtService } from '@nestjs/jwt';
+import { Room } from 'src/entities/room.entity';
 
 @WebSocketGateway({
   cors: {
@@ -15,7 +19,11 @@ import { QuestionService } from '../question/question.service';
   },
 })
 export class RoomGateway {
-  constructor(private readonly roomService: RoomService, private readonly questionService: QuestionService) {}
+  constructor(
+    private readonly roomService: RoomService,
+    private readonly questionService: QuestionService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
@@ -25,28 +33,51 @@ export class RoomGateway {
   }
 
   @SubscribeMessage('enterLobby')
-  enterLobby(@ConnectedSocket() client: Socket) {
+  enterLobby(@ConnectedSocket() client: Socket, @MessageBody() data) {
+    const { access_token } = data;
+    const { userId } = this.jwtService.verify(access_token, { secret: process.env.ACCESS_TOKEN_SECRET });
+    client.data['userId'] = userId;
     client.data.roomname = 'lobby';
     client.join('lobby');
   }
 
   @SubscribeMessage('createRoom')
   async createRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
-    const { roomname } = data;
+    const { roomname, access_token } = data;
+    const { userId } = this.jwtService.verify(access_token, { secret: process.env.ACCESS_TOKEN_SECRET });
+
+    client.data['userId'] = userId;
     client.data.roomname = roomname;
-    await this.roomService.socketCreateRoom(roomname, client);
-    console.log(`${roomname} 방이 생성되었습니다.`);
-    client.broadcast.emit('createdRoom');
-    return;
+
+    const result = await this.roomService.socketCreateRoom(roomname, client);
+    if (result.result === false) {
+      client.emit('isEnterRoom');
+    } else if (!result.result && result.data === '존재하지 않는 방입니다.') {
+      client.emit('isNotExistRoom');
+    } else {
+      console.log(`${roomname} 방이 생성되었습니다.`);
+      client.broadcast.emit('createdRoom');
+      return;
+    }
   }
 
   @SubscribeMessage('joinRoom')
   async joinRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
-    const { roomname } = data;
-    console.log('roomname: ', roomname);
+    const { roomname, access_token } = data;
+    const { userId } = this.jwtService.verify(access_token, { secret: process.env.ACCESS_TOKEN_SECRET });
+    client.data['userId'] = userId;
+
     const room = await this.roomService.joinRoom(roomname, client);
-    console.log(`${roomname} 방에 입장하셨습니다.`);
-    client.to(String(room.roomId)).emit('joinRoom', `${roomname} 방에 사람이 입장하였습니다.`);
+    if (room.result === false) {
+      client.emit('isEnterRoom');
+      return;
+    } else if (!room.result && room.data === '비정상 경로') {
+      client.emit('invalidRoot');
+      return;
+    } else {
+      console.log(`${roomname} 방에 입장하셨습니다.`);
+      client.to(String(room.data)).emit('joinRoom', `${roomname} 방에 사람이 입장하였습니다.`);
+    }
   }
 
   @SubscribeMessage('playerWin')
@@ -82,7 +113,8 @@ export class RoomGateway {
 
   async handleDisconnect(@ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
-    await this.roomService.deleteRoom(roomId);
+    const userId = client.data.userId;
+    await this.roomService.deleteRoom(roomId, userId);
     client.to(roomId).emit('leaveRoom', '상대방이 방에서 나갔습니다.');
     client.broadcast.emit('createdRoom');
     client.leave(client.data.roomname);
@@ -93,16 +125,24 @@ export class RoomGateway {
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('')
-  async createRoom(@Body() roomData: { roomname: string }) {
-    const createdRoom = await this.roomService.createRoom(roomData);
+  async createRoom(@Body() roomData: { roomname: string }, @User() userId: number) {
+    const createdRoom = await this.roomService.createRoom(roomData, userId);
     return createdRoom;
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Patch('')
-  async httpJoinRoom(@Body() roomData: { roomname: string }) {
-    await this.roomService.httpJoinRoom(roomData.roomname);
+  async httpJoinRoom(@Body() roomData: { roomname: string }, @User() userId: number) {
+    await this.roomService.httpJoinRoom(roomData.roomname, userId);
     return;
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/check')
+  async checkRoomInvalid(@User() userId: number) {
+    await this.roomService.invalidEnterRoom(userId);
   }
 
   @Get('/list')

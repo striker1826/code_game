@@ -41,13 +41,4 @@ export class QuestionService {
     if (!question) throw new NotFoundException('Question not found');
     return question;
   }
-
-  async runCode(code, input) {
-    try {
-      const output = await eval(code + `solution('${input}')`);
-      return output;
-    } catch (err) {
-      return err;
-    }
-  }
 }

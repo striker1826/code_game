@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 import { PatchDate } from './patchDate.entity';
 import { Tier } from './tier.entity';
 import { SolvedTime } from './solvedTime.entity';
+import { RoomUser } from './roomUser.entity';
 
 @Entity({ name: 'User' })
 export class User extends PatchDate {
@@ -30,4 +31,7 @@ export class User extends PatchDate {
 
   @OneToMany(() => SolvedTime, (solvedTime) => solvedTime.User)
   SolvedTime: SolvedTime[];
+
+  @OneToMany(() => RoomUser, (RoomUser) => RoomUser.User)
+  RoomUser: RoomUser[];
 }

@@ -8,10 +8,17 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Room } from 'src/entities/room.entity';
 import { QuestionModule } from '../question/question.module';
 import { GradingModule } from '../grading/grading.module';
+import { RoomUser } from 'src/entities/roomUser.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Room]), QuestionModule, GradingModule],
+  imports: [TypeOrmModule.forFeature([Room, RoomUser]), QuestionModule, GradingModule],
   controllers: [RoomController],
-  providers: [RoomGateway, RoomService, { provide: RoomRepository, useClass: RoomRepositoryImpl }, JwtService],
+  providers: [
+    RoomGateway,
+    RoomService,
+    JwtService,
+    { provide: RoomRepository, useClass: RoomRepositoryImpl },
+    JwtService,
+  ],
 })
 export class RoomModule {}
