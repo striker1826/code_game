@@ -28,7 +28,7 @@ export const winstonLogger = WinstonModule.createLogger({
 
   transports: [
     new winston.transports.Console({
-      level: env === 'production' ? 'info' : 'silly',
+      level: 'info',
       format:
         env === 'production'
           ? winston.format.simple()

@@ -26,4 +26,9 @@ export class AuthController {
     const res = await this.authService.testLogin(data);
     return res;
   }
+
+  @Post('signTest')
+  async testSignup(@Body() data) {
+    await this.authService.createUser(data);
+  }
 }

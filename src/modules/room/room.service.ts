@@ -99,17 +99,19 @@ export class RoomService {
 
   async deleteRoom(roomId, userId: number): Promise<void> {
     const room = await this.roomRepository.findRoomByRoomId(roomId);
+    console.log(room);
     if (!room) {
       return;
     }
 
     await this.dataSource.transaction(async (manager) => {
       if (room && room.count !== 1) {
-        await this.roomRepository.deleteRoomUser(room.roomId, userId, manager);
-        await this.roomRepository.updateRoomCountDecrease(room.roomId, manager);
+        await this.roomRepository.deleteRoomUser(roomId, userId, manager);
+        await this.roomRepository.updateRoomCountDecrease(roomId, manager);
       } else {
-        await this.roomRepository.deleteRoomUser(room.roomId, userId, manager);
-        await this.roomRepository.deleteRoom(room.roomId, manager);
+        console.log(roomId);
+        await this.roomRepository.deleteRoomUser(roomId, userId, manager);
+        await this.roomRepository.deleteRoom(roomId, manager);
       }
     });
 

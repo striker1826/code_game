@@ -28,15 +28,8 @@ export class RoomGateway {
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client: Socket) {
-    client.emit('connection', { id: client.id });
-  }
-
   @SubscribeMessage('enterLobby')
   enterLobby(@ConnectedSocket() client: Socket, @MessageBody() data) {
-    const { access_token } = data;
-    const { userId } = this.jwtService.verify(access_token, { secret: process.env.ACCESS_TOKEN_SECRET });
-    client.data['userId'] = userId;
     client.data.roomname = 'lobby';
     client.join('lobby');
   }
@@ -45,15 +38,17 @@ export class RoomGateway {
   async createRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
     const { roomname, access_token } = data;
     const { userId } = this.jwtService.verify(access_token, { secret: process.env.ACCESS_TOKEN_SECRET });
-
+    console.log(userId);
     client.data['userId'] = userId;
     client.data.roomname = roomname;
 
     const result = await this.roomService.socketCreateRoom(roomname, client);
-    if (result.result === false) {
-      client.emit('isEnterRoom');
-    } else if (!result.result && result.data === '존재하지 않는 방입니다.') {
+    if (!result.result && result.data === '존재하지 않는 방입니다.') {
       client.emit('isNotExistRoom');
+      return;
+    } else if (!result.result && result.data === null) {
+      client.emit('isEnterRoom');
+      return;
     } else {
       console.log(`${roomname} 방이 생성되었습니다.`);
       client.broadcast.emit('createdRoom');
