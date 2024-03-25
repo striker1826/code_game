@@ -9,6 +9,8 @@ import { PassportModule } from '@nestjs/passport';
 import { GradingModule } from './modules/grading/grading.module';
 import { RoomModule } from './modules/room/room.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -21,9 +23,22 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
     PassportModule.register({
       session: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 30,
+      },
+    ]),
   ],
+
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
