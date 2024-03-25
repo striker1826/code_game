@@ -24,7 +24,7 @@ const databaseModule = TypeOrmModule.forRootAsync({
       entities: [Category, Question, QuestionCategory, SolvedTime, Tier, User, TestCase, Room, RoomUser],
       charset: 'utf8mb4',
       synchronize: false,
-      logging: true,
+      logging: false,
     };
   },
 });
