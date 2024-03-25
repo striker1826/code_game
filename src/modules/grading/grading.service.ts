@@ -49,9 +49,9 @@ export class GradingService {
 
   async gradingTestCase({ code }, questionId: number) {
     // code, questionId를 이용하여 채점하는 로직
-    console.log(questionId);
+
     const testCases = await this.gradingRepository.findTestCaseByQuestionId(questionId);
-    console.log(testCases);
+
     let result = [];
 
     testCases.forEach(async (testCase) => {

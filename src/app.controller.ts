@@ -11,7 +11,5 @@ export class AppController {
   }
 
   @Get()
-  async hello(@Req() req: Request) {
-    console.log(req);
-  }
+  async hello(@Req() req: Request) {}
 }

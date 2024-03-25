@@ -99,7 +99,7 @@ export class RoomService {
 
   async deleteRoom(roomId, userId: number): Promise<void> {
     const room = await this.roomRepository.findRoomByRoomId(roomId);
-    console.log(room);
+
     if (!room) {
       return;
     }
@@ -109,7 +109,6 @@ export class RoomService {
         await this.roomRepository.deleteRoomUser(roomId, userId, manager);
         await this.roomRepository.updateRoomCountDecrease(roomId, manager);
       } else {
-        console.log(roomId);
         await this.roomRepository.deleteRoomUser(roomId, userId, manager);
         await this.roomRepository.deleteRoom(roomId, manager);
       }

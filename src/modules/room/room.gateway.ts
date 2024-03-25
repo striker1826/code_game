@@ -38,7 +38,7 @@ export class RoomGateway {
   async createRoom(@MessageBody() data, @ConnectedSocket() client: Socket) {
     const { roomname, access_token } = data;
     const { userId } = this.jwtService.verify(access_token, { secret: process.env.ACCESS_TOKEN_SECRET });
-    console.log(userId);
+
     client.data['userId'] = userId;
     client.data.roomname = roomname;
 
@@ -50,7 +50,6 @@ export class RoomGateway {
       client.emit('isEnterRoom');
       return;
     } else {
-      console.log(`${roomname} 방이 생성되었습니다.`);
       client.broadcast.emit('createdRoom');
       return;
     }
@@ -70,7 +69,7 @@ export class RoomGateway {
       client.emit('invalidRoot');
       return;
     } else {
-      console.log(`${roomname} 방에 입장하셨습니다.`);
+      `${roomname} 방에 입장하셨습니다.`;
       client.to(String(room.data)).emit('joinRoom', `${roomname} 방에 사람이 입장하였습니다.`);
     }
   }
@@ -79,7 +78,7 @@ export class RoomGateway {
   async playerWin(@MessageBody() data, @ConnectedSocket() client: Socket) {
     const { roomId } = client.data;
     await this.roomService.updateRoomIsUnReady(roomId);
-    console.log('send: ', roomId);
+
     client.to(roomId).emit('playerLose', 'aaa');
   }
 
@@ -87,10 +86,10 @@ export class RoomGateway {
   async syncQuestion(@MessageBody() data, @ConnectedSocket() client: Socket) {
     const { questionId } = data;
     const { roomId } = client.data;
-    console.log(questionId);
-    console.log(roomId);
+    questionId;
+
     const question = await this.questionService.getQuestionById(questionId);
-    console.log(question);
+
     client.to(roomId).emit('syncQuestion', question);
   }
 
@@ -99,7 +98,6 @@ export class RoomGateway {
     const { roomId } = client.data;
     const result = await this.roomService.readyIncrease(roomId);
     if (result.result) {
-      console.log(result.testCases);
       client.emit('start', { question: result.data, testCases: result.testCases });
       client.to(roomId).emit('start', { question: result.data, testCases: result.testCases });
       return;
@@ -142,7 +140,6 @@ export class RoomController {
 
   @Get('/list')
   async getRoomList(@Req() req: Request) {
-    console.log(req.headers.authorization);
     const roomList = await this.roomService.getRoomList();
     return roomList;
   }

@@ -32,7 +32,7 @@ export class QuestionService {
 
     // questions suffle -> Todo: 피셔-예이츠 셔플 로직으로 수정 필요
     questions.sort(() => Math.random() - 0.5);
-    console.log(questions[0]);
+
     return questions[0];
   }
 
