@@ -8,6 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PassportModule } from '@nestjs/passport';
 import { GradingModule } from './modules/grading/grading.module';
 import { RoomModule } from './modules/room/room.module';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [
@@ -26,6 +27,6 @@ import { RoomModule } from './modules/room/room.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply().exclude({ path: '/api/health', method: RequestMethod.GET }).forRoutes('*');
+    consumer.apply(LoggerMiddleware).exclude({ path: '/api/health', method: RequestMethod.GET }).forRoutes('*');
   }
 }
