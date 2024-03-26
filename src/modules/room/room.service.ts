@@ -22,7 +22,7 @@ export class RoomService {
     }
 
     const isEnterRoom = await this.roomRepository.findRoomIsUserId(client.data.userId);
-    if (isEnterRoom[0]) {
+    if (isEnterRoom) {
       return { result: false, data: null };
     }
 
@@ -48,7 +48,7 @@ export class RoomService {
     }
 
     const isEnterRoom = await this.roomRepository.findRoomIsUserId(userId);
-    if (isEnterRoom[0]) {
+    if (isEnterRoom) {
       throw new BadRequestException('이미 방에 입장한 유저입니다.');
     }
 
@@ -65,7 +65,7 @@ export class RoomService {
     const findedRoom = await this.roomRepository.findRoomByRoomName(roomname);
 
     const isEnterRoom = await this.roomRepository.findRoomIsUserId(client.data.userId);
-    if (isEnterRoom[0]) {
+    if (isEnterRoom) {
       return { result: false, data: null };
     }
 
@@ -97,7 +97,7 @@ export class RoomService {
     if (findedRoom.isReady) throw new UnauthorizedException('이미 시작된 방입니다.');
 
     const isEnterRoom = await this.roomRepository.findRoomIsUserId(userId);
-    if (isEnterRoom[0]) {
+    if (isEnterRoom) {
       throw new BadRequestException('이미 방에 입장한 유저입니다.');
     }
 
@@ -160,7 +160,7 @@ export class RoomService {
 
   async invalidEnterRoom(userId: number) {
     const isEnterRoom = await this.roomRepository.findRoomIsUserId(userId);
-    if (isEnterRoom[0]) {
+    if (isEnterRoom) {
       throw new BadRequestException('이미 방에 입장한 유저입니다.');
     }
   }
