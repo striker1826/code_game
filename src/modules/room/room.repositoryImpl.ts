@@ -106,7 +106,7 @@ export class RoomRepositoryImpl implements RoomRepository {
     validRoot.root = key;
     validRoot.userId = userId;
     validRoot.roomId = roomId;
-    await manager.getRepository(RoomUser).save(validRoot);
+    await manager.getRepository(ValidRoot).save(validRoot);
     return;
   }
 }
