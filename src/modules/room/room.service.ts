@@ -86,7 +86,7 @@ export class RoomService {
     if (findedRoom.isReady) throw new UnauthorizedException('이미 시작된 방입니다.');
 
     const isEnterRoom = await this.roomRepository.findRoomIsUserId(userId);
-    if (isEnterRoom) {
+    if (isEnterRoom[0]) {
       throw new BadRequestException('이미 방에 입장한 유저입니다.');
     }
 
