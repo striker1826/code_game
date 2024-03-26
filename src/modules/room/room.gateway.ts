@@ -46,6 +46,8 @@ export class RoomGateway {
     if (!result.result && result.data === '존재하지 않는 방입니다.') {
       client.emit('isNotExistRoom');
       return;
+    } else if (!result.result && result.data === '정상적인 방법으로 입장해주세요.') {
+      client.emit('invalidRoot');
     } else if (!result.result && result.data === null) {
       client.emit('isEnterRoom');
       return;

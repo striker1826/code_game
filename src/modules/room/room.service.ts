@@ -22,9 +22,15 @@ export class RoomService {
     }
 
     const isEnterRoom = await this.roomRepository.findRoomIsUserId(client.data.userId);
-    if (isEnterRoom) {
+    if (isEnterRoom[0]) {
       return { result: false, data: null };
     }
+
+    isEnterRoom.forEach((room) => {
+      if (room.userId !== client.data.userId) {
+        return { result: false, data: '정상적인 방법으로 입장해주세요.' };
+      }
+    });
 
     await this.dataSource.transaction(async (manager) => {
       await this.roomRepository.saveRoomUser(room.roomId, client.data.userId, manager);
