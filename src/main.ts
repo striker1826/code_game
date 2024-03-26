@@ -30,7 +30,12 @@ async function bootstrap() {
   app.use(passport.session());
   // app.useWebSocketAdapter(new WsAdapter(app));
   app.enableCors({
-    origin: ['https://algorithmcodegame.netlify.app', 'http://localhost:3000'],
+    origin: [
+      'https://algorithmcodegame.netlify.app',
+      'http://localhost:3000',
+      'http://battlecode.shop.s3-website.ap-northeast-2.amazonaws.com',
+      'https://www.battlecode.shop',
+    ],
     credentials: true,
   });
 
