@@ -122,15 +122,15 @@ export class RoomController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('')
-  async createRoom(@Body() roomData: { roomname: string }, @User() userId: number) {
+  async createRoom(@Body() roomData: { roomname: string; key: string }, @User() userId: number) {
     const createdRoom = await this.roomService.createRoom(roomData, userId);
     return createdRoom;
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('')
-  async httpJoinRoom(@Body() roomData: { roomname: string }, @User() userId: number) {
-    await this.roomService.httpJoinRoom(roomData.roomname, userId);
+  async httpJoinRoom(@Body() roomData: { roomname: string; key: string }, @User() userId: number) {
+    await this.roomService.httpJoinRoom(roomData.roomname, userId, roomData.key);
     return;
   }
 

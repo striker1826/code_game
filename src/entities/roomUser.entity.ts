@@ -14,6 +14,9 @@ export class RoomUser extends PatchDate {
   @Column('bigint', { name: 'userId', comment: '유저 아이디' })
   userId: number;
 
+  @Column('varchar', { name: 'key', comment: '어떤 루트로 연동했는지' })
+  key: string;
+
   @ManyToOne(() => User, (User) => User.RoomUser, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

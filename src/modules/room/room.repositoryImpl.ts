@@ -83,4 +83,18 @@ export class RoomRepositoryImpl implements RoomRepository {
     await manager.getRepository(RoomUser).delete({ roomId, userId });
     return;
   }
+
+  async saveRoomUserKey(roomId: number, userId: number, key: string, manager: EntityManager): Promise<void> {
+    const newKey = manager.getRepository(RoomUser).create();
+    newKey.key = key;
+    newKey.userId = userId;
+    newKey.roomId = roomId;
+    await manager.getRepository(RoomUser).save(newKey);
+    return;
+  }
+
+  async findRoomUserKey(roomId: number, userId: number, key: string): Promise<RoomUser> {
+    const isKey = await this.roomUserModel.findOne({ where: { roomId, userId, key } });
+    return isKey;
+  }
 }
