@@ -55,7 +55,7 @@ export class RoomService {
     let createdRoom;
     await this.dataSource.transaction(async (manager) => {
       createdRoom = await this.roomRepository.saveRoom(roomname, manager);
-      await this.roomRepository.saveRoomUserKey(createdRoom.roomId, userId, key, manager);
+      await this.roomRepository.saveUserKey(createdRoom.roomId, userId, key, manager);
     });
 
     return createdRoom;
@@ -102,7 +102,7 @@ export class RoomService {
     }
 
     await this.dataSource.transaction(async (manager) => {
-      await this.roomRepository.saveRoomUserKey(findedRoom.roomId, userId, key, manager);
+      await this.roomRepository.saveUserKey(findedRoom.roomId, userId, key, manager);
     });
 
     return;

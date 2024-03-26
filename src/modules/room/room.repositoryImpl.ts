@@ -3,11 +3,13 @@ import { RoomRepository } from './room.repository';
 import { Room } from 'src/entities/room.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { RoomUser } from 'src/entities/roomUser.entity';
+import { ValidRoot } from 'src/entities/validRoot.entity';
 
 export class RoomRepositoryImpl implements RoomRepository {
   constructor(
     @InjectRepository(Room) private readonly roomModel: Repository<Room>,
     @InjectRepository(RoomUser) private readonly roomUserModel: Repository<RoomUser>,
+    @InjectRepository(ValidRoot) private readonly validRootModel: Repository<ValidRoot>,
   ) {}
 
   async saveRoom(roomname: string, manager: EntityManager): Promise<Room> {
@@ -68,6 +70,7 @@ export class RoomRepositoryImpl implements RoomRepository {
 
   async findRoomIsUserId(userId: number) {
     const roomUser = await this.roomUserModel.findOne({ where: { userId } });
+    console.log(roomUser);
     return roomUser;
   }
 
@@ -93,8 +96,17 @@ export class RoomRepositoryImpl implements RoomRepository {
     return;
   }
 
-  async findRoomUserKey(roomId: number, userId: number, key: string): Promise<RoomUser> {
-    const isKey = await this.roomUserModel.findOne({ where: { roomId, userId, key } });
+  async findRoomUserKey(roomId: number, userId: number, key: string): Promise<ValidRoot> {
+    const isKey = await this.validRootModel.findOne({ where: { roomId, userId, root: key } });
     return isKey;
+  }
+
+  async saveUserKey(roomId: number, userId: number, key: string, manager: EntityManager): Promise<void> {
+    const validRoot = manager.getRepository(ValidRoot).create();
+    validRoot.root = key;
+    validRoot.userId = userId;
+    validRoot.roomId = roomId;
+    await manager.getRepository(RoomUser).save(validRoot);
+    return;
   }
 }

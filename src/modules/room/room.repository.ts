@@ -1,5 +1,6 @@
 import { Room } from 'src/entities/room.entity';
 import { RoomUser } from 'src/entities/roomUser.entity';
+import { ValidRoot } from 'src/entities/validRoot.entity';
 import { EntityManager } from 'typeorm';
 
 export interface RoomRepository {
@@ -18,7 +19,8 @@ export interface RoomRepository {
   saveRoomUser(roomId: number, userId: number, manager: EntityManager): Promise<void>;
   saveRoomUserKey(roomId: number, userId: number, key: string, manager: EntityManager): Promise<void>;
   deleteRoomUser(roomId: number, userId: number, manager: EntityManager): Promise<void>;
-  findRoomUserKey(roomId: number, userId: number, key: string): Promise<RoomUser>;
+  findRoomUserKey(roomId: number, userId: number, key: string): Promise<ValidRoot>;
+  saveUserKey(roomId: number, userId: number, key: string, manager: EntityManager): Promise<void>;
 }
 
 export const RoomRepository = Symbol('RoomRepository');

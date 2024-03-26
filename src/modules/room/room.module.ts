@@ -9,9 +9,10 @@ import { Room } from 'src/entities/room.entity';
 import { QuestionModule } from '../question/question.module';
 import { GradingModule } from '../grading/grading.module';
 import { RoomUser } from 'src/entities/roomUser.entity';
+import { ValidRoot } from 'src/entities/validRoot.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Room, RoomUser]), QuestionModule, GradingModule],
+  imports: [TypeOrmModule.forFeature([Room, RoomUser, ValidRoot]), QuestionModule, GradingModule],
   controllers: [RoomController],
   providers: [
     RoomGateway,
