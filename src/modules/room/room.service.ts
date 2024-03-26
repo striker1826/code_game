@@ -73,7 +73,7 @@ export class RoomService {
       return { result: false, data: '비정상 경로' };
     }
 
-    const rootValidate = await this.roomRepository.findRoomUserKey(findedRoom.roomId, client.data.userId, 'created');
+    const rootValidate = await this.roomRepository.findRoomUserKey(findedRoom.roomId, client.data.userId, 'joined');
     if (!rootValidate) {
       return { result: false, data: '비정상 경로' };
     }
